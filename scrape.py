@@ -47,7 +47,6 @@ table1_dict['total_staff_cases']=table1['rows'][0][2]
 
 table1_list.append(table1_dict)
 data1=pd.DataFrame(table1_list)
-data1.to_csv("data/reported_covid_cases.csv", index=False)
 
 
 # In[6]:
@@ -64,7 +63,6 @@ table2_dict['cum_staff_cases']=table2['rows'][0][2]
 
 table2_list.append(table2_dict)
 data2=pd.DataFrame(table2_list).replace(",","", regex=True)
-data2.to_csv("data/cum_covid_cases.csv", index=False)
 
 
 # In[7]:
@@ -76,7 +74,6 @@ data3.columns=column_names
 trans_data3=data3.set_index('Action').T.reset_index().rename(columns={
     'index':'doe_dece_schools'}).replace(",","", regex=True)
 trans_data3['date']=trans_data3.doe_dece_schools.str.split('as', expand=True)[0][0].replace('<br>',"")
-trans_data3.to_csv('data/doe_dece_actions.csv', index=False)
 
 
 # In[8]:
@@ -88,11 +85,31 @@ data4.columns=column_names
 trans_data4=data4.set_index('Action').T.reset_index().rename(columns={
     'index':'charter_action'}).replace(",","", regex=True)
 trans_data4['date']=trans_data4.charter_action.str.split('as', expand=True)[0][0].replace('<br>',"")
-trans_data4.to_csv('data/charter_actions.csv', index=False)
 
 
-# In[ ]:
+# In[9]:
 
 
+old_data1=pd.read_csv("data/reported_covid_cases.csv")
+old_data2=pd.read_csv("data/cum_covid_cases.csv")
+old_data3=pd.read_csv("data/doe_dece_actions.csv")
+old_data4=pd.read_csv("data/charter_actions.csv")
 
+
+# In[10]:
+
+
+merged_data1=pd.concat([data1, old_data1]).reset_index(drop=True).drop_duplicates(subset=['date'])
+merged_data2=pd.concat([data2, old_data2]).reset_index(drop=True).drop_duplicates(subset=['date'])
+merged_data3=pd.concat([trans_data3, old_data3]).reset_index(drop=True).drop_duplicates(subset=['date'])
+merged_data4=pd.concat([trans_data4, old_data4]).reset_index(drop=True).drop_duplicates(subset=['date'])
+
+
+# In[11]:
+
+
+merged_data1.to_csv("data/reported_covid_cases.csv", index=False)
+merged_data2.to_csv("data/cum_covid_cases.csv", index=False)
+merged_data3.to_csv('data/doe_dece_actions.csv', index=False)
+merged_data4.to_csv('data/charter_actions.csv', index=False)
 
